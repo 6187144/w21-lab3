@@ -1,7 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+var connectionString = builder.Configuration.GetConnectionString("StoreDBContext");
+var serverVersion = new MariaDbServerVersion(builder.Configuration.GetValue<string>("DBMSVersion"));
+
+
+builder.Services.AddDbContext<StoreDBContext>(options =>
+    options.UseLazyLoadingProxies().UseMySql(connectionString, serverVersion));
+
 
 var app = builder.Build();
 
