@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace w21_lab3.Pages;
 
@@ -12,8 +13,25 @@ public class IndexModel : PageModel
         _logger = logger;
     }
 
+    public string? UserEmail { get; set; }
     public void OnGet()
     {
-
+        if (User.Identity != null)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
+            {
+                var email = claimsIdentity.FindFirst(ClaimTypes.Email);
+                if (email != null)
+                {
+                    UserEmail = email.Value;
+                    _logger.Log(LogLevel.Information, email.Value);
+                }
+                // foreach (var cl in claimsIdentity.Claims)
+                // {
+                //     _logger.Log(LogLevel.Information, $"{cl.Type}:{cl.Value}");
+                // }
+            }
+        }
     }
 }

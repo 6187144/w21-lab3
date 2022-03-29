@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using w21_lab3.Models;
 
 namespace w21_lab3.Pages_Product
@@ -21,7 +23,12 @@ namespace w21_lab3.Pages_Product
 
         public IActionResult OnGet()
         {
-            return Page();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
+            {
+                return Page();
+            }
+            return Redirect("../Identity/Account/Login");
         }
 
         [BindProperty]

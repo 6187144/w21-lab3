@@ -1,4 +1,10 @@
 @page
+
+@* @using Microsoft.AspNetCore.Identity
+
+    @inject SignInManager<IdentityUser> SignInManager
+    @inject UserManager<IdentityUser> UserManager *@
+
 @model w21_lab3.Pages_Product.EditModel
 
 @{
@@ -41,5 +47,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

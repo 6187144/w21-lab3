@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using w21_lab3.Models;
 
 namespace w21_lab3.Pages_Product
@@ -29,14 +30,18 @@ namespace w21_lab3.Pages_Product
             {
                 return NotFound();
             }
-
-            Product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == id);
-
-            if (Product == null)
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
             {
-                return NotFound();
+                Product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == id);
+
+                if (Product == null)
+                {
+                    return NotFound();
+                }
+                return Page();
             }
-            return Page();
+            return Redirect("../Identity/Account/Login");
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.

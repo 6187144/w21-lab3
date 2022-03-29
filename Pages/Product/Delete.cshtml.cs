@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using w21_lab3.Models;
 
 namespace w21_lab3.Pages_Product
@@ -24,18 +25,23 @@ namespace w21_lab3.Pages_Product
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            if (claimsIdentity.IsAuthenticated)
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            Product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == id);
+                Product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == id);
 
-            if (Product == null)
-            {
-                return NotFound();
+                if (Product == null)
+                {
+                    return NotFound();
+                }
+                return Page();
             }
-            return Page();
+            return Redirect("../Identity/Account/Login");
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
