@@ -14,12 +14,12 @@ namespace w21_lab3.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<SiteUser> _userManager;
+        private readonly SignInManager<SiteUser> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<SiteUser> userManager,
+            SignInManager<SiteUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -56,11 +56,30 @@ namespace w21_lab3.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            [Display(Name = "Phone Number")]
+            public string Phone { get; set; }
+
+            [Required]
+            [Display(Name = "Full Name")]
+            public string Name { get; set; }
+
+            [Display(Name = "Street Number")]
+            public int StreetNumber { get; set; }
+
+            [Display(Name = "Street Name")]
+            public string StreetName { get; set; }
+
+            [Display(Name = "Postal Code")]
+            [RegularExpression(@"^[A-Za-z][0-9][A-Za-z][ ]*[0-9][A-Za-z][0-9]$")]
+            public string PostalCode { get; set; }
+
+            public string City { get; set; }
+
+            [Required]
+            public string Province { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(SiteUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -69,7 +88,14 @@ namespace w21_lab3.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                Phone = user.Phone,
+                Name = user.Name,
+                StreetNumber = user.StreetNumber,
+                StreetName = user.StreetName,
+                PostalCode = user.PostalCode,
+                City = user.City,
+                Province = user.Province
+
             };
         }
 
@@ -82,6 +108,7 @@ namespace w21_lab3.Areas.Identity.Pages.Account.Manage
             }
 
             await LoadAsync(user);
+
             return Page();
         }
 
@@ -96,20 +123,18 @@ namespace w21_lab3.Areas.Identity.Pages.Account.Manage
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
+
                 return Page();
             }
+            user.Phone = Input.Phone != user.Phone ? Input.Phone : user.Phone;
+            user.Name = Input.Name != user.Name ? Input.Name : user.Name;
+            user.StreetNumber = Input.StreetNumber != user.StreetNumber ? Input.StreetNumber : user.StreetNumber;
+            user.StreetName = Input.StreetName != user.StreetName ? Input.StreetName : user.StreetName;
+            user.City = Input.City != user.City ? Input.City : user.City;
+            user.PostalCode = Input.PostalCode != user.PostalCode ? Input.PostalCode : user.PostalCode;
+            user.Province = Input.Province != user.Province ? Input.Province : user.Province;
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
-
+            //await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();

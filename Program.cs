@@ -1,3 +1,4 @@
+global using w21_lab3.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("StoreDBContext
 builder.Services.AddDbContext<StoreDBContext>(options =>
     options.UseLazyLoadingProxies().UseMySql(connectionString, serverVersion));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<SiteUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<StoreDBContext>();
 
 
